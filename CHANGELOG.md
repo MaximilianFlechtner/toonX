@@ -1,3 +1,11 @@
+## 1.0.1
+
+-   Fixed LICENSE file to comply with pub.dev requirements
+-   Reduced topics to 5 for pub.dev compliance
+-   Updated README with Credits & Reference section
+-   Added comprehensive contribution guidelines
+-   Minor documentation improvements
+
 ## 1.0.0
 
 -   Initial release

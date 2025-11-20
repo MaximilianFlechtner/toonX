@@ -1,6 +1,6 @@
 name: toonx
 description: "Dart implementation of TOON (Token-Oriented Object Notation) - a compact format for LLMs with 30-60% fewer tokens than JSON."
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/TheNoumanDev/toonX
 repository: https://github.com/TheNoumanDev/toonX
 issue_tracker: https://github.com/TheNoumanDev/toonX/issues
