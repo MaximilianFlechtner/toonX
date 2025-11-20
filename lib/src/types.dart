@@ -6,4 +6,3 @@
 /// - Collections: `List<dynamic>`, `Map<String, dynamic>`
 /// - Nested combinations of the above
 typedef JsonValue = dynamic;
-

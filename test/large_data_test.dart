@@ -45,11 +45,7 @@ void main() {
           {'sku': 'G-042', 'name': 'Gadget', 'qty': 1, 'price': 149.99},
           {'sku': 'T-123', 'name': 'Tool', 'qty': 3, 'price': 89.99},
         ],
-        'totals': {
-          'subtotal': 451.44,
-          'tax': 36.12,
-          'total': 487.56,
-        },
+        'totals': {'subtotal': 451.44, 'tax': 36.12, 'total': 487.56},
       };
 
       final toon = encode(order);
@@ -91,14 +87,14 @@ void main() {
           'server': {
             'host': 'localhost',
             'port': 8080,
-            'ssl': {'enabled': true, 'cert': '/path/cert'}
+            'ssl': {'enabled': true, 'cert': '/path/cert'},
           },
           'database': {
             'host': 'db.local',
             'port': 5432,
-            'credentials': {'user': 'admin', 'pass': 'secret'}
-          }
-        }
+            'credentials': {'user': 'admin', 'pass': 'secret'},
+          },
+        },
       };
 
       final toon = encode(config);
@@ -126,7 +122,7 @@ void main() {
           'totalVisitors': 47500,
           'totalPageViews': 248000,
           'avgConversions': 25,
-        }
+        },
       };
 
       final toon = encode(analytics);
@@ -146,7 +142,7 @@ void main() {
             'price': 10.0 + i,
             'stock': 100 - i,
           },
-        )
+        ),
       };
 
       final toon = encode(data, options: EncodeOptions(delimiter: '\t'));
@@ -163,12 +159,9 @@ void main() {
           'server': {
             'host': 'localhost',
             'port': 8080,
-            'ssl': {
-              'enabled': true,
-              'cert': '/path/cert',
-            }
-          }
-        }
+            'ssl': {'enabled': true, 'cert': '/path/cert'},
+          },
+        },
       };
 
       final toon = encode(
@@ -185,4 +178,3 @@ void main() {
     });
   });
 }
-

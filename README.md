@@ -1,6 +1,6 @@
 # toonX
 
-![TOON Format Diagram](images/toon_diagram.png)
+![TOON Format Diagram](images/toon_diagram.jpg)
 
 **Dart implementation of TOON (Token-Oriented Object Notation)** - a compact, human-readable format for LLMs that uses **~40% fewer tokens than JSON** while maintaining **better accuracy**.
 

@@ -130,4 +130,3 @@ class DecodeOptions {
     this.flatMapSeparator = '_',
   });
 }
-

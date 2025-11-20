@@ -36,7 +36,7 @@ void basicEncoding() {
     'name': 'Alice',
     'age': 30,
     'active': true,
-    'tags': ['admin', 'developer', 'ops']
+    'tags': ['admin', 'developer', 'ops'],
   };
 
   final toon = encode(data);
@@ -76,7 +76,7 @@ void tabularArrays() {
       {'id': 1, 'name': 'Alice', 'role': 'admin', 'active': true},
       {'id': 2, 'name': 'Bob', 'role': 'user', 'active': false},
       {'id': 3, 'name': 'Charlie', 'role': 'moderator', 'active': true},
-    ]
+    ],
   };
 
   final toon = encode(users);
@@ -98,7 +98,7 @@ void customDelimiters() {
     'products': [
       {'sku': 'A1', 'price': 29.99, 'stock': 100},
       {'sku': 'B2', 'price': 49.99, 'stock': 50},
-    ]
+    ],
   };
 
   // Tab delimiter - best for LLM token efficiency
@@ -117,13 +117,10 @@ void lengthMarkers() {
   print('5. Length Markers\n');
 
   final data = {
-    'items': ['apple', 'banana', 'cherry']
+    'items': ['apple', 'banana', 'cherry'],
   };
 
-  final withMarker = encode(
-    data,
-    options: EncodeOptions(lengthMarker: '#'),
-  );
+  final withMarker = encode(data, options: EncodeOptions(lengthMarker: '#'));
   print(withMarker);
   // Output: items[#3]: apple,banana,cherry
 
@@ -136,16 +133,9 @@ void flatMapExample() {
 
   final config = {
     'database': {
-      'connection': {
-        'host': 'localhost',
-        'port': 5432,
-        'timeout': 30
-      },
-      'pool': {
-        'min': 5,
-        'max': 20
-      }
-    }
+      'connection': {'host': 'localhost', 'port': 5432, 'timeout': 30},
+      'pool': {'min': 5, 'max': 20},
+    },
   };
 
   // Flatten with custom separator
@@ -195,7 +185,7 @@ void realWorldExample() {
     'customer': {
       'name': 'Jane Doe',
       'email': 'jane@example.com',
-      'tier': 'premium'
+      'tier': 'premium',
     },
     'items': [
       {'sku': 'LAPTOP-X1', 'qty': 1, 'price': 1299.99},
@@ -203,7 +193,7 @@ void realWorldExample() {
       {'sku': 'USB-C-CABLE', 'qty': 3, 'price': 12.99},
     ],
     'status': 'shipped',
-    'total': 1398.94
+    'total': 1398.94,
   };
 
   // Encode with tab delimiter for best token efficiency
@@ -211,8 +201,8 @@ void realWorldExample() {
   print(toon);
 
   print(
-      '\n✓ TOON uses ~40% fewer tokens than JSON for structured data like this!');
+    '\n✓ TOON uses ~40% fewer tokens than JSON for structured data like this!',
+  );
 
   print('\n---\n');
 }
-

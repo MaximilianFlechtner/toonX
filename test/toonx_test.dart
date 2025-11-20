@@ -11,7 +11,7 @@ void main() {
 
     test('encode nested object', () {
       final data = {
-        'user': {'id': 1, 'name': 'Alice'}
+        'user': {'id': 1, 'name': 'Alice'},
       };
       final result = encode(data);
       expect(result, 'user:\n  id: 1\n  name: Alice');
@@ -19,7 +19,7 @@ void main() {
 
     test('encode primitive array', () {
       final data = {
-        'tags': ['admin', 'ops', 'dev']
+        'tags': ['admin', 'ops', 'dev'],
       };
       final result = encode(data);
       expect(result, 'tags[3]: admin,ops,dev');
@@ -29,8 +29,8 @@ void main() {
       final data = {
         'items': [
           {'id': 1, 'qty': 5},
-          {'id': 2, 'qty': 3}
-        ]
+          {'id': 2, 'qty': 3},
+        ],
       };
       final result = encode(data);
       expect(result, 'items[2]{id,qty}:\n  1,5\n  2,3');
@@ -38,7 +38,11 @@ void main() {
 
     test('encode mixed array', () {
       final data = {
-        'items': [1, {'a': 1}, 'x']
+        'items': [
+          1,
+          {'a': 1},
+          'x',
+        ],
       };
       final result = encode(data);
       expect(result, 'items[3]:\n  - 1\n  - a: 1\n  - x');
@@ -68,8 +72,8 @@ void main() {
       final data = {
         'items': [
           {'id': 1, 'name': 'Widget'},
-          {'id': 2, 'name': 'Gadget'}
-        ]
+          {'id': 2, 'name': 'Gadget'},
+        ],
       };
       final result = encode(data, options: EncodeOptions(delimiter: '\t'));
       expect(result, 'items[2\t]{id\tname}:\n  1\tWidget\n  2\tGadget');
@@ -77,7 +81,7 @@ void main() {
 
     test('encode with pipe delimiter', () {
       final data = {
-        'tags': ['a', 'b', 'c']
+        'tags': ['a', 'b', 'c'],
       };
       final result = encode(data, options: EncodeOptions(delimiter: '|'));
       expect(result, 'tags[3|]: a|b|c');
@@ -87,7 +91,7 @@ void main() {
   group('Length Marker Tests', () {
     test('encode with length marker', () {
       final data = {
-        'tags': ['a', 'b', 'c']
+        'tags': ['a', 'b', 'c'],
       };
       final result = encode(data, options: EncodeOptions(lengthMarker: '#'));
       expect(result, 'tags[#3]: a,b,c');
@@ -97,8 +101,8 @@ void main() {
       final data = {
         'items': [
           {'id': 1},
-          {'id': 2}
-        ]
+          {'id': 2},
+        ],
       };
       final result = encode(data, options: EncodeOptions(lengthMarker: '#'));
       expect(result, 'items[#2]{id}:\n  1\n  2');
@@ -108,7 +112,7 @@ void main() {
   group('Custom Indentation Tests', () {
     test('encode with 4-space indent', () {
       final data = {
-        'user': {'id': 1, 'name': 'Alice'}
+        'user': {'id': 1, 'name': 'Alice'},
       };
       final result = encode(data, options: EncodeOptions(indent: 4));
       expect(result, 'user:\n    id: 1\n    name: Alice');
@@ -163,8 +167,8 @@ void main() {
     test('flatten nested map on encode', () {
       final data = {
         'a': {
-          'b': {'c': 1}
-        }
+          'b': {'c': 1},
+        },
       };
       final result = encode(
         data,
@@ -176,8 +180,8 @@ void main() {
     test('flatten with custom separator', () {
       final data = {
         'a': {
-          'b': {'c': 1}
-        }
+          'b': {'c': 1},
+        },
       };
       final result = encode(
         data,
@@ -194,8 +198,8 @@ void main() {
       );
       expect(result, {
         'a': {
-          'b': {'c': 1}
-        }
+          'b': {'c': 1},
+        },
       });
     });
   });
@@ -211,7 +215,7 @@ void main() {
       final toon = 'user:\n  id: 1\n  name: Alice';
       final result = decode(toon);
       expect(result, {
-        'user': {'id': 1, 'name': 'Alice'}
+        'user': {'id': 1, 'name': 'Alice'},
       });
     });
 
@@ -219,7 +223,7 @@ void main() {
       final toon = 'tags[3]: admin,ops,dev';
       final result = decode(toon);
       expect(result, {
-        'tags': ['admin', 'ops', 'dev']
+        'tags': ['admin', 'ops', 'dev'],
       });
     });
 
@@ -229,8 +233,8 @@ void main() {
       expect(result, {
         'items': [
           {'id': 1, 'qty': 5},
-          {'id': 2, 'qty': 3}
-        ]
+          {'id': 2, 'qty': 3},
+        ],
       });
     });
 
@@ -252,8 +256,8 @@ void main() {
       expect(result, {
         'items': [
           {'id': 1, 'name': 'Widget'},
-          {'id': 2, 'name': 'Gadget'}
-        ]
+          {'id': 2, 'name': 'Gadget'},
+        ],
       });
     });
 
@@ -261,7 +265,7 @@ void main() {
       final toon = 'tags[3|]: a|b|c';
       final result = decode(toon);
       expect(result, {
-        'tags': ['a', 'b', 'c']
+        'tags': ['a', 'b', 'c'],
       });
     });
 
@@ -291,7 +295,7 @@ void main() {
       final toon = 'items[3]: a,b';
       final result = decode(toon, options: DecodeOptions(strict: false));
       expect(result, {
-        'items': ['a', 'b']
+        'items': ['a', 'b'],
       });
     });
   });
@@ -313,8 +317,8 @@ void main() {
       final data = {
         'pairs': [
           [1, 2],
-          [3, 4]
-        ]
+          [3, 4],
+        ],
       };
       final result = encode(data);
       expect(result, 'pairs[2]:\n  - [2]: 1,2\n  - [2]: 3,4');
@@ -324,9 +328,9 @@ void main() {
       final data = {
         'users': [
           {'id': 1, 'name': 'Alice', 'role': 'admin'},
-          {'id': 2, 'name': 'Bob', 'role': 'user'}
+          {'id': 2, 'name': 'Bob', 'role': 'user'},
         ],
-        'settings': {'theme': 'dark', 'notifications': true}
+        'settings': {'theme': 'dark', 'notifications': true},
       };
 
       final toon = encode(data);

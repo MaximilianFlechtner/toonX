@@ -24,14 +24,17 @@ import 'utils.dart';
 /// See also:
 /// - [encode] for converting Dart values to TOON format
 /// - [DecodeOptions] for all available decoding options
-JsonValue decode(String input, {DecodeOptions options = const DecodeOptions()}) {
+JsonValue decode(
+  String input, {
+  DecodeOptions options = const DecodeOptions(),
+}) {
   final decoder = _ToonDecoder(input, options);
   final result = decoder.decode();
-  
+
   if (options.enforceFlatMap && result is Map<String, dynamic>) {
     return unflattenMap(result, options.flatMapSeparator);
   }
-  
+
   return result;
 }
 
@@ -45,36 +48,44 @@ class _ToonDecoder {
 
   JsonValue decode() {
     if (input.trim().isEmpty) return {};
-    
+
     // Check if root is an array
     if (_lines.isNotEmpty && _lines[0].startsWith('[')) {
       return _parseRootArray();
     }
-    
+
     return _parseObject(0);
   }
 
   JsonValue _parseRootArray() {
     final line = _lines[_currentLine];
     final arrayInfo = _parseArrayHeader(line);
-    
+
     if (arrayInfo == null) {
       if (options.strict) {
         throw ToonException('Invalid array header at line $_currentLine');
       }
       return [];
     }
-    
+
     _currentLine++;
-    
+
     if (arrayInfo['length'] == 0) return [];
-    
-        if (arrayInfo['afterColon'].isNotEmpty) {
-          // Inline primitive array
-          final values = splitByDelimiter(arrayInfo['afterColon'], arrayInfo['delimiter']);
-          return values.map(parseValue).toList();
+
+    if (arrayInfo['afterColon'].isNotEmpty) {
+      // Inline primitive array
+      final values = splitByDelimiter(
+        arrayInfo['afterColon'],
+        arrayInfo['delimiter'],
+      );
+      return values.map(parseValue).toList();
     } else if (arrayInfo['fields'] != null) {
-      return _parseTabularArray(arrayInfo['length'], arrayInfo['fields'], arrayInfo['delimiter'], 0);
+      return _parseTabularArray(
+        arrayInfo['length'],
+        arrayInfo['fields'],
+        arrayInfo['delimiter'],
+        0,
+      );
     } else {
       return _parseListArray(arrayInfo['length'], 0);
     }
@@ -82,50 +93,55 @@ class _ToonDecoder {
 
   Map<String, dynamic> _parseObject(int indentLevel) {
     final result = <String, dynamic>{};
-    
+
     while (_currentLine < _lines.length) {
       final line = _lines[_currentLine];
       final lineIndent = _getIndent(line);
-      
+
       if (lineIndent < indentLevel) break;
       if (lineIndent > indentLevel) {
         _currentLine++;
         continue;
       }
-      
+
       final trimmed = line.trim();
       if (trimmed.isEmpty || trimmed.startsWith('#')) {
         _currentLine++;
         continue;
       }
-      
+
       final colonIndex = _findKeyValueSeparator(trimmed);
       if (colonIndex == -1) {
         _currentLine++;
         continue;
       }
-      
+
       var keyPart = trimmed.substring(0, colonIndex).trim();
       final afterColon = trimmed.substring(colonIndex + 1).trim();
-      
+
       // Check if key has array header (e.g., "tags[3]" or "items[2]{id,name}")
-      final arrayMatch = RegExp(r'^(.+?)(\[#?\d+[\t|]?\](?:\{[^}]+\})?)$').firstMatch(keyPart);
-      
+      final arrayMatch = RegExp(
+        r'^(.+?)(\[#?\d+[\t|]?\](?:\{[^}]+\})?)$',
+      ).firstMatch(keyPart);
+
       if (arrayMatch != null) {
         // Key with inline array header
         final actualKey = unquoteString(arrayMatch.group(1)!.trim());
         final arrayHeader = arrayMatch.group(2)!;
         final fullArrayHeader = '$arrayHeader:$afterColon';
         final arrayInfo = _parseArrayHeader(fullArrayHeader);
-        
+
         if (arrayInfo != null) {
           _currentLine++;
-          
+
           if (arrayInfo['length'] == 0) {
             result[actualKey] = [];
           } else if (arrayInfo['afterColon'].isNotEmpty) {
             // Inline primitive array
-            final values = splitByDelimiter(arrayInfo['afterColon'], arrayInfo['delimiter']);
+            final values = splitByDelimiter(
+              arrayInfo['afterColon'],
+              arrayInfo['delimiter'],
+            );
             result[actualKey] = values.map(parseValue).toList();
           } else if (arrayInfo['fields'] != null) {
             // Tabular array on next lines
@@ -133,11 +149,14 @@ class _ToonDecoder {
               arrayInfo['length'],
               arrayInfo['fields'],
               arrayInfo['delimiter'],
-              indentLevel
+              indentLevel,
             );
           } else {
             // List array on next lines
-            result[actualKey] = _parseListArray(arrayInfo['length'], indentLevel);
+            result[actualKey] = _parseListArray(
+              arrayInfo['length'],
+              indentLevel,
+            );
           }
         } else {
           result[actualKey] = parseValue(afterColon);
@@ -145,17 +164,17 @@ class _ToonDecoder {
         }
         continue;
       }
-      
+
       final key = unquoteString(keyPart);
-      
+
       if (afterColon.isEmpty) {
         _currentLine++;
-        
+
         // Check if next line is array or nested object
         if (_currentLine < _lines.length) {
           final nextLine = _lines[_currentLine];
           final nextIndent = _getIndent(nextLine);
-          
+
           if (nextIndent > indentLevel) {
             result[key] = _parseObject(nextIndent);
           } else {
@@ -169,12 +188,15 @@ class _ToonDecoder {
         final arrayInfo = _parseArrayHeader(afterColon);
         if (arrayInfo != null) {
           _currentLine++;
-          
+
           if (arrayInfo['length'] == 0) {
             result[key] = [];
           } else if (arrayInfo['afterColon'].isNotEmpty) {
             // Inline primitive array
-            final values = splitByDelimiter(arrayInfo['afterColon'], arrayInfo['delimiter']);
+            final values = splitByDelimiter(
+              arrayInfo['afterColon'],
+              arrayInfo['delimiter'],
+            );
             result[key] = values.map(parseValue).toList();
           } else if (arrayInfo['fields'] != null) {
             // Tabular array on next lines
@@ -182,7 +204,7 @@ class _ToonDecoder {
               arrayInfo['length'],
               arrayInfo['fields'],
               arrayInfo['delimiter'],
-              indentLevel
+              indentLevel,
             );
           } else {
             // List array on next lines
@@ -197,71 +219,84 @@ class _ToonDecoder {
         _currentLine++;
       }
     }
-    
+
     return result;
   }
 
-  List<dynamic> _parseTabularArray(int length, List<String> fields, String delimiter, int baseIndent) {
+  List<dynamic> _parseTabularArray(
+    int length,
+    List<String> fields,
+    String delimiter,
+    int baseIndent,
+  ) {
     final result = <Map<String, dynamic>>[];
-    
+
     for (var i = 0; i < length; i++) {
       if (_currentLine >= _lines.length) {
         if (options.strict) {
-          throw ToonException('Array length mismatch: expected $length, got $i');
+          throw ToonException(
+            'Array length mismatch: expected $length, got $i',
+          );
         }
         break;
       }
-      
+
       final line = _lines[_currentLine];
       final lineIndent = _getIndent(line);
-      
+
       if (lineIndent <= baseIndent) {
         if (options.strict) {
-          throw ToonException('Array length mismatch: expected $length, got $i');
+          throw ToonException(
+            'Array length mismatch: expected $length, got $i',
+          );
         }
         break;
       }
-      
+
       final trimmed = line.trim();
       final values = splitByDelimiter(trimmed, delimiter);
-      
+
       if (options.strict && values.length != fields.length) {
         throw ToonException('Field count mismatch at line $_currentLine');
       }
-      
+
       final row = <String, dynamic>{};
       for (var j = 0; j < fields.length && j < values.length; j++) {
         row[fields[j]] = parseValue(values[j]);
       }
-      
+
       result.add(row);
       _currentLine++;
     }
-    
+
     return result;
   }
 
   List<dynamic> _parseListArray(int length, int baseIndent) {
     final result = <dynamic>[];
-    
+
     for (var i = 0; i < length; i++) {
       if (_currentLine >= _lines.length) {
         if (options.strict) {
-          throw ToonException('Array length mismatch: expected $length, got $i');
+          throw ToonException(
+            'Array length mismatch: expected $length, got $i',
+          );
         }
         break;
       }
-      
+
       final line = _lines[_currentLine];
       final lineIndent = _getIndent(line);
-      
+
       if (lineIndent <= baseIndent) {
         if (options.strict) {
-          throw ToonException('Array length mismatch: expected $length, got $i');
+          throw ToonException(
+            'Array length mismatch: expected $length, got $i',
+          );
         }
         break;
       }
-      
+
       final trimmed = line.trim();
       if (!trimmed.startsWith('- ')) {
         if (options.strict) {
@@ -270,9 +305,9 @@ class _ToonDecoder {
         _currentLine++;
         continue;
       }
-      
+
       final afterDash = trimmed.substring(2);
-      
+
       // Check if it's an inline array
       if (afterDash.startsWith('[')) {
         final arrayInfo = _parseArrayHeader(afterDash);
@@ -285,7 +320,10 @@ class _ToonDecoder {
             if (colonIndex != -1) {
               final afterColon = afterDash.substring(colonIndex + 1).trim();
               if (afterColon.isNotEmpty) {
-                final values = splitByDelimiter(afterColon, arrayInfo['delimiter']);
+                final values = splitByDelimiter(
+                  afterColon,
+                  arrayInfo['delimiter'],
+                );
                 result.add(values.map(parseValue).toList());
               } else {
                 result.add([]);
@@ -295,21 +333,21 @@ class _ToonDecoder {
           continue;
         }
       }
-      
+
       // Check if it's an object
       final colonIndex = _findKeyValueSeparator(afterDash);
       if (colonIndex != -1) {
         final obj = <String, dynamic>{};
         final key = unquoteString(afterDash.substring(0, colonIndex).trim());
         final afterColon = afterDash.substring(colonIndex + 1).trim();
-        
+
         if (afterColon.isEmpty) {
           _currentLine++;
-          
+
           if (_currentLine < _lines.length) {
             final nextLine = _lines[_currentLine];
             final nextIndent = _getIndent(nextLine);
-            
+
             if (nextIndent > lineIndent) {
               obj[key] = _parseNestedValue(nextIndent);
             } else {
@@ -323,12 +361,15 @@ class _ToonDecoder {
           final arrayInfo = _parseArrayHeader(afterColon);
           if (arrayInfo != null) {
             _currentLine++;
-            
+
             if (arrayInfo['length'] == 0) {
               obj[key] = [];
             } else if (arrayInfo['afterColon'].isNotEmpty) {
               // Inline primitive array
-              final values = splitByDelimiter(arrayInfo['afterColon'], arrayInfo['delimiter']);
+              final values = splitByDelimiter(
+                arrayInfo['afterColon'],
+                arrayInfo['delimiter'],
+              );
               obj[key] = values.map(parseValue).toList();
             } else if (arrayInfo['fields'] != null) {
               // Tabular array on next lines
@@ -336,7 +377,7 @@ class _ToonDecoder {
                 arrayInfo['length'],
                 arrayInfo['fields'],
                 arrayInfo['delimiter'],
-                lineIndent
+                lineIndent,
               );
             } else {
               // List array on next lines
@@ -350,25 +391,29 @@ class _ToonDecoder {
           obj[key] = parseValue(afterColon);
           _currentLine++;
         }
-        
+
         // Parse remaining fields at same indent
         while (_currentLine < _lines.length) {
           final nextLine = _lines[_currentLine];
           final nextIndent = _getIndent(nextLine);
-          
+
           if (nextIndent != lineIndent) break;
-          
+
           final nextTrimmed = nextLine.trim();
           final nextColonIndex = _findKeyValueSeparator(nextTrimmed);
-          
+
           if (nextColonIndex == -1) break;
-          
-          final nextKey = unquoteString(nextTrimmed.substring(0, nextColonIndex).trim());
-          final nextAfterColon = nextTrimmed.substring(nextColonIndex + 1).trim();
-          
+
+          final nextKey = unquoteString(
+            nextTrimmed.substring(0, nextColonIndex).trim(),
+          );
+          final nextAfterColon = nextTrimmed
+              .substring(nextColonIndex + 1)
+              .trim();
+
           if (nextAfterColon.isEmpty) {
             _currentLine++;
-            
+
             if (_currentLine < _lines.length) {
               final nestedIndent = _getIndent(_lines[_currentLine]);
               if (nestedIndent > lineIndent) {
@@ -384,12 +429,15 @@ class _ToonDecoder {
             final arrayInfo = _parseArrayHeader(nextAfterColon);
             if (arrayInfo != null) {
               _currentLine++;
-              
+
               if (arrayInfo['length'] == 0) {
                 obj[nextKey] = [];
               } else if (arrayInfo['afterColon'].isNotEmpty) {
                 // Inline primitive array
-                final values = splitByDelimiter(arrayInfo['afterColon'], arrayInfo['delimiter']);
+                final values = splitByDelimiter(
+                  arrayInfo['afterColon'],
+                  arrayInfo['delimiter'],
+                );
                 obj[nextKey] = values.map(parseValue).toList();
               } else if (arrayInfo['fields'] != null) {
                 // Tabular array on next lines
@@ -397,7 +445,7 @@ class _ToonDecoder {
                   arrayInfo['length'],
                   arrayInfo['fields'],
                   arrayInfo['delimiter'],
-                  lineIndent
+                  lineIndent,
                 );
               } else {
                 // List array on next lines
@@ -412,23 +460,23 @@ class _ToonDecoder {
             _currentLine++;
           }
         }
-        
+
         result.add(obj);
       } else {
         result.add(parseValue(afterDash));
         _currentLine++;
       }
     }
-    
+
     return result;
   }
 
   dynamic _parseNestedValue(int indentLevel) {
     if (_currentLine >= _lines.length) return null;
-    
+
     final line = _lines[_currentLine];
     final trimmed = line.trim();
-    
+
     if (trimmed.startsWith('[')) {
       final arrayInfo = _parseArrayHeader(trimmed);
       if (arrayInfo != null) {
@@ -440,41 +488,44 @@ class _ToonDecoder {
             arrayInfo['length'],
             arrayInfo['fields'],
             arrayInfo['delimiter'],
-            indentLevel
+            indentLevel,
           );
         } else {
           return _parseListArray(arrayInfo['length'], indentLevel);
         }
       }
     }
-    
+
     return _parseObject(indentLevel);
   }
 
   Map<String, dynamic>? _parseArrayHeader(String line) {
-    final match = RegExp(r'^\[#?(\d+)([\t|])?\](?:\{([^}]+)\})?:(.*)$').firstMatch(line);
-    
+    final match = RegExp(
+      r'^\[#?(\d+)([\t|])?\](?:\{([^}]+)\})?:(.*)$',
+    ).firstMatch(line);
+
     if (match == null) return null;
-    
+
     final length = int.parse(match.group(1)!);
     final delimMarker = match.group(2) ?? ',';
     final fieldsStr = match.group(3);
     final afterColon = match.group(4)?.trim() ?? '';
-    
+
     String delimiter = ',';
     if (delimMarker == '\t') {
       delimiter = '\t';
     } else if (delimMarker == '|') {
       delimiter = '|';
     }
-    
+
     List<String>? fields;
     if (fieldsStr != null) {
-      fields = splitByDelimiter(fieldsStr, delimiter)
-          .map((f) => unquoteString(f.trim()))
-          .toList();
+      fields = splitByDelimiter(
+        fieldsStr,
+        delimiter,
+      ).map((f) => unquoteString(f.trim())).toList();
     }
-    
+
     return {
       'length': length,
       'delimiter': delimiter,
@@ -486,31 +537,30 @@ class _ToonDecoder {
   int _findKeyValueSeparator(String line) {
     var inQuotes = false;
     var escapeNext = false;
-    
+
     for (var i = 0; i < line.length; i++) {
       if (escapeNext) {
         escapeNext = false;
         continue;
       }
-      
+
       if (line[i] == '\\') {
         escapeNext = true;
         continue;
       }
-      
+
       if (line[i] == '"') {
         inQuotes = !inQuotes;
         continue;
       }
-      
+
       if (!inQuotes && line[i] == ':') {
         return i;
       }
     }
-    
+
     return -1;
   }
-
 
   int _getIndent(String line) {
     var count = 0;
@@ -524,4 +574,3 @@ class _ToonDecoder {
     return count ~/ options.indent;
   }
 }
-

@@ -21,13 +21,16 @@ import 'utils.dart';
 /// See also:
 /// - [decode] for converting TOON back to Dart values
 /// - [EncodeOptions] for all available encoding options
-String encode(JsonValue value, {EncodeOptions options = const EncodeOptions()}) {
+String encode(
+  JsonValue value, {
+  EncodeOptions options = const EncodeOptions(),
+}) {
   final encoder = _ToonEncoder(options);
-  
+
   if (options.enforceFlatMap && value is Map<String, dynamic>) {
     value = flattenMap(value, options.flatMapSeparator);
   }
-  
+
   return encoder.encode(value);
 }
 
@@ -46,24 +49,24 @@ class _ToonEncoder {
     } else {
       _encodePrimitive(value);
     }
-    
+
     return _buffer.toString();
   }
 
   void _encodeObject(Map<dynamic, dynamic> obj, {bool inline = false}) {
     if (obj.isEmpty) return;
-    
+
     final entries = obj.entries.toList();
     for (var i = 0; i < entries.length; i++) {
       final entry = entries[i];
       final key = _encodeKey(entry.key.toString());
       final value = normalizeValue(entry.value);
-      
+
       if (!inline && i > 0) _buffer.write('\n');
       if (!inline) _writeIndent();
-      
+
       _buffer.write(key);
-      
+
       if (value == null || value is num || value is bool) {
         _buffer.write(': ');
         _encodePrimitive(value);
@@ -98,19 +101,21 @@ class _ToonEncoder {
     final length = list.length;
     final marker = options.lengthMarker ?? '';
     final delimMarker = options.delimiterMarker;
-    
+
     _buffer.write('[$marker$length$delimMarker]:');
-    
+
     if (list.isEmpty) return;
-    
+
     if (_canUseInline(list)) {
       _buffer.write(' ');
       _encodePrimitiveArray(list);
     } else if (_canUseTabular(list)) {
       final fields = (list[0] as Map).keys.toList();
-      final fieldStr = fields.map((f) => _encodeKey(f.toString())).join(options.delimiter);
+      final fieldStr = fields
+          .map((f) => _encodeKey(f.toString()))
+          .join(options.delimiter);
       _buffer.write('{$fieldStr}:');
-      
+
       for (final item in list) {
         _buffer.write('\n');
         _writeIndent();
@@ -130,7 +135,7 @@ class _ToonEncoder {
     final length = list.length;
     final marker = options.lengthMarker ?? '';
     final delimMarker = options.delimiterMarker;
-    
+
     _buffer.write('[$marker$length$delimMarker]: ');
     _encodePrimitiveArray(list);
   }
@@ -140,10 +145,12 @@ class _ToonEncoder {
     final marker = options.lengthMarker ?? '';
     final delimMarker = options.delimiterMarker;
     final fields = (list[0] as Map).keys.toList();
-    final fieldStr = fields.map((f) => _encodeKey(f.toString())).join(options.delimiter);
-    
+    final fieldStr = fields
+        .map((f) => _encodeKey(f.toString()))
+        .join(options.delimiter);
+
     _buffer.write('[$marker$length$delimMarker]{$fieldStr}:');
-    
+
     for (final item in list) {
       _buffer.write('\n');
       _indentLevel++;
@@ -157,9 +164,9 @@ class _ToonEncoder {
     final length = list.length;
     final marker = options.lengthMarker ?? '';
     final delimMarker = options.delimiterMarker;
-    
+
     _buffer.write('[$marker$length$delimMarker]:');
-    
+
     for (final item in list) {
       _buffer.write('\n');
       _indentLevel++;
@@ -171,42 +178,46 @@ class _ToonEncoder {
   }
 
   void _encodePrimitiveArray(List list) {
-    final values = list.map((v) {
-      final normalized = normalizeValue(v);
-      if (normalized is String) {
-        return quoteString(normalized, options.delimiter);
-      }
-      return _primitiveToString(normalized);
-    }).join(options.delimiter);
-    
+    final values = list
+        .map((v) {
+          final normalized = normalizeValue(v);
+          if (normalized is String) {
+            return quoteString(normalized, options.delimiter);
+          }
+          return _primitiveToString(normalized);
+        })
+        .join(options.delimiter);
+
     _buffer.write(values);
   }
 
   void _encodeTabularRow(Map<dynamic, dynamic> obj, List<dynamic> fields) {
-    final values = fields.map((field) {
-      final value = normalizeValue(obj[field]);
-      if (value is String) {
-        return quoteString(value, options.delimiter);
-      }
-      return _primitiveToString(value);
-    }).join(options.delimiter);
-    
+    final values = fields
+        .map((field) {
+          final value = normalizeValue(obj[field]);
+          if (value is String) {
+            return quoteString(value, options.delimiter);
+          }
+          return _primitiveToString(value);
+        })
+        .join(options.delimiter);
+
     _buffer.write(values);
   }
 
   void _encodeListItem(dynamic value) {
     final normalized = normalizeValue(value);
-    
+
     if (normalized is Map) {
       if (normalized.isEmpty) return;
-      
+
       final entries = normalized.entries.toList();
       final firstEntry = entries[0];
       final key = _encodeKey(firstEntry.key.toString());
       final firstValue = firstEntry.value;
-      
+
       _buffer.write('$key:');
-      
+
       if (firstValue == null || firstValue is num || firstValue is bool) {
         _buffer.write(' ');
         _encodePrimitive(firstValue);
@@ -232,7 +243,7 @@ class _ToonEncoder {
         _encodeObject(firstValue);
         _indentLevel--;
       }
-      
+
       if (entries.length > 1) {
         for (var i = 1; i < entries.length; i++) {
           _buffer.write('\n');
@@ -240,9 +251,9 @@ class _ToonEncoder {
           final entry = entries[i];
           final k = _encodeKey(entry.key.toString());
           final v = entry.value;
-          
+
           _buffer.write('$k:');
-          
+
           if (v == null || v is num || v is bool) {
             _buffer.write(' ');
             _encodePrimitive(v);
@@ -311,32 +322,32 @@ class _ToonEncoder {
     if (list.isEmpty) return false;
     return list.every((item) {
       final normalized = normalizeValue(item);
-      return normalized == null || 
-             normalized is num || 
-             normalized is bool || 
-             normalized is String;
+      return normalized == null ||
+          normalized is num ||
+          normalized is bool ||
+          normalized is String;
     });
   }
 
   bool _canUseTabular(List list) {
     if (list.isEmpty) return false;
     if (list.first is! Map) return false;
-    
+
     final firstMap = list.first as Map;
     if (firstMap.isEmpty) return false;
-    
+
     final keys = firstMap.keys.toSet();
-    
+
     for (final item in list) {
       if (item is! Map) return false;
       if (!_setEquals(item.keys.toSet(), keys)) return false;
-      
+
       for (final value in item.values) {
         final normalized = normalizeValue(value);
         if (normalized is Map || normalized is List) return false;
       }
     }
-    
+
     return true;
   }
 
@@ -349,4 +360,3 @@ class _ToonEncoder {
     _buffer.write(' ' * (options.indent * _indentLevel));
   }
 }
-
