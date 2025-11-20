@@ -5,15 +5,6 @@ homepage: https://github.com/TheNoumanDev/toonX
 repository: https://github.com/TheNoumanDev/toonX
 issue_tracker: https://github.com/TheNoumanDev/toonX/issues
 
-topics:
-  - toon
-  - llm
-  - json
-  - encoding
-  - token-efficiency
-  - ai
-  - serialization
-
 environment:
   sdk: ^3.8.1
   flutter: ">=1.17.0"
@@ -66,3 +57,11 @@ flutter:
   #
   # For details regarding fonts in packages, see
   # https://flutter.dev/to/font-from-package
+
+
+topics:
+  - toon
+  - llm
+  - json
+  - token-efficiency
+  - serialization
