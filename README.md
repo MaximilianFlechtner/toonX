@@ -261,33 +261,25 @@ Run tests: `dart test`
 
 ---
 
-## 📄 Specification
+## 🙏 Credits & Reference
 
-This implementation follows the [TOON Specification v2.0](https://github.com/toon-format/toon) for cross-language compatibility.
+This Dart implementation is based on the [TOON (Token-Oriented Object Notation) format](https://github.com/toon-format/toon), an innovative data format designed for efficient LLM communication. Special thanks to the TOON format creators for their excellent work on this specification.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions welcome! Please check the [official TOON repository](https://github.com/toon-format/toon) for the full specification and conformance tests.
+Contributions are welcome! To contribute to this package:
 
----
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes and add tests
+4. Ensure all tests pass (`dart test`)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to your branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
-## 📜 License
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
----
-
-## 🔗 Links
-
--   [GitHub Repository](https://github.com/TheNoumanDev/toonX)
--   [pub.dev Package](https://pub.dev/packages/toonx)
--   [API Documentation](https://pub.dev/documentation/toonx/latest/)
--   [Issue Tracker](https://github.com/TheNoumanDev/toonX/issues)
--   [TOON Official Specification](https://github.com/toon-format/toon)
--   [Benchmarks & Accuracy Tests](https://github.com/toon-format/toon#benchmarks)
--   [Interactive Playground](https://toon.run)
+Please report bugs and feature requests in our [issue tracker](https://github.com/TheNoumanDev/toonX/issues).
 
 ---
 
