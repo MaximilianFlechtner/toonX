@@ -153,7 +153,7 @@ String _convertToXml(dynamic data, {String? rootName, int indent = 0}) {
 /// Converts a Dart object to XML string using Badgerfish convention.
 ///
 /// Handles @ prefixed attributes, $ text content, and @xmlns namespaces.
-String _convertToXmlBadgerfish(dynamic data, {String? rootName, int indent = 0}) {
+String _convertToXmlBadgerfish(dynamic data, {int indent = 0}) {
   final buffer = StringBuffer();
   final indentStr = '  ' * indent;
 
