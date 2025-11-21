@@ -1,3 +1,14 @@
+## 1.2.0
+
+-   Added XML support with `xmlToToon()` and `toonToXml()` functions
+-   XML conversion powered by the xml2json package
+-   Support for Parker convention (lightweight, ideal for LLMs)
+-   Support for Badgerfish convention (preserves attributes and namespaces)
+-   CLI now supports XML files (.xml) with auto-detection
+-   Added 26 comprehensive tests for XML conversion
+-   Updated README with XML examples and proper credits
+-   Total test count: 105+ tests
+
 ## 1.1.0
 
 -   Added YAML support with `yamlToToon()` and `toonToYaml()` functions

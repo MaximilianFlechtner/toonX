@@ -1,6 +1,6 @@
 name: toonx
-description: "Dart implementation of TOON (Token-Oriented Object Notation) - a compact format for LLMs with 30-60% fewer tokens than JSON. Supports JSON and YAML conversion."
-version: 1.1.0
+description: "Dart implementation of TOON (Token-Oriented Object Notation) - a compact format for LLMs with 30-60% fewer tokens than JSON. Supports JSON, YAML, and XML conversion."
+version: 1.2.0
 homepage: https://github.com/TheNoumanDev/toonX
 repository: https://github.com/TheNoumanDev/toonX
 issue_tracker: https://github.com/TheNoumanDev/toonX/issues
@@ -16,6 +16,7 @@ dependencies:
   flutter:
     sdk: flutter
   yaml: ^3.1.2
+  xml2json: ^6.2.7
 
 dev_dependencies:
   flutter_test:

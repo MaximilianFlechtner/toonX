@@ -6,3 +6,4 @@ export 'src/options.dart';
 export 'src/types.dart';
 export 'src/utils.dart';
 export 'src/yaml_converter.dart';
+export 'src/xml_converter.dart';

@@ -86,6 +86,10 @@ Future<void> _autoDetect(String filePath) async {
       // YAML → TOON
       final toon = yamlToToon(input);
       stdout.write(toon);
+    } else if (filePath.endsWith('.xml')) {
+      // XML → TOON
+      final toon = xmlToToon(input);
+      stdout.write(toon);
     } else if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
       // Auto-detect JSON → TOON
       final data = jsonDecode(input);
@@ -124,6 +128,7 @@ Usage:
 Supported Formats:
   - JSON (.json)
   - YAML (.yaml, .yml)
+  - XML (.xml)
   - TOON (.toon)
 
 Examples:
@@ -136,7 +141,7 @@ Examples:
   # Auto-detect by extension
   dart run toonx file.json     # JSON → TOON
   dart run toonx file.yaml     # YAML → TOON
-  dart run toonx file.yml      # YAML → TOON
+  dart run toonx file.xml      # XML → TOON
   dart run toonx file.toon     # TOON → JSON
 
 Input:

@@ -22,6 +22,8 @@ TOON combines YAML's indentation-based structure with CSV-style tabular arrays t
 -   ✅ **`decode()`** - Parse TOON strings back to Dart objects
 -   ✅ **`yamlToToon()`** - Convert YAML to TOON format
 -   ✅ **`toonToYaml()`** - Convert TOON to YAML format
+-   ✅ **`xmlToToon()`** - Convert XML to TOON format (Parker & Badgerfish)
+-   ✅ **`toonToXml()`** - Convert TOON to XML format
 -   ✅ **Lossless round-trip** conversion with full JSON data model support
 
 **Encoding Options:**
@@ -42,8 +44,8 @@ TOON combines YAML's indentation-based structure with CSV-style tabular arrays t
 
 **Additional Features:**
 
--   ✅ **CLI tool** - command-line interface for JSON/YAML/TOON conversion
--   ✅ **Comprehensive tests** - 79+ tests including large datasets
+-   ✅ **CLI tool** - command-line interface for JSON/YAML/XML/TOON conversion
+-   ✅ **Comprehensive tests** - 105+ tests including large datasets
 -   ✅ **Full documentation** - detailed API docs for all functions
 -   ✅ **Type-safe** - strongly typed Dart implementation
 
@@ -221,11 +223,52 @@ final yaml = toonToYaml(toon);
 print(yaml);
 ```
 
+### XML Support
+
+Convert between XML and TOON formats using the [xml2json](https://pub.dev/packages/xml2json) package:
+
+```dart
+// XML → TOON (Parker convention - lightweight, no attributes)
+final xmlString = '''
+<users>
+  <user>
+    <id>1</id>
+    <name>Alice</name>
+    <role>admin</role>
+  </user>
+  <user>
+    <id>2</id>
+    <name>Bob</name>
+    <role>user</role>
+  </user>
+</users>
+''';
+
+final toon = xmlToToon(xmlString);
+// users:
+//   user[2]{id,name,role}:
+//     "1",Alice,admin
+//     "2",Bob,user
+
+// TOON → XML
+final xml = toonToXml(toon);
+print(xml);
+
+// For XML with attributes/namespaces, use Badgerfish convention
+final toonBadgerfish = xmlToToonBadgerfish(xmlString);
+```
+
+**XML Conventions Supported:**
+- **Parker** (default) - Lightweight, ideal for LLM use cases
+- **Badgerfish** - Preserves attributes and namespaces
+
+XML support is powered by the excellent [xml2json package](https://pub.dev/packages/xml2json) by [darticulate.com](https://pub.dev/publishers/darticulate.com/packages).
+
 ---
 
 ## 🔧 CLI Tool
 
-Convert JSON, YAML, or TOON files via command line:
+Convert JSON, YAML, XML, or TOON files via command line:
 
 ```bash
 # JSON → TOON
@@ -233,6 +276,9 @@ dart run toonx input.json
 
 # YAML → TOON
 dart run toonx config.yaml
+
+# XML → TOON
+dart run toonx data.xml
 
 # TOON → JSON (default)
 dart run toonx data.toon
@@ -254,6 +300,7 @@ dart run toonx --help
 **Supported file formats:**
 - `.json` → Auto-converts to TOON
 - `.yaml`, `.yml` → Auto-converts to TOON
+- `.xml` → Auto-converts to TOON
 - `.toon` → Auto-converts to JSON
 
 ---
@@ -307,6 +354,9 @@ Run tests: `dart test`
 ## 🙏 Credits & Reference
 
 This Dart implementation is based on the [TOON (Token-Oriented Object Notation) format](https://github.com/toon-format/toon), an innovative data format designed for efficient LLM communication. Special thanks to the TOON format creators for their excellent work on this specification.
+
+**Special Thanks:**
+- **[xml2json](https://pub.dev/packages/xml2json)** by [darticulate.com](https://pub.dev/publishers/darticulate.com/packages) - Powers our XML conversion capabilities with support for Parker, Badgerfish, GData, and OpenRally conventions. A battle-tested package with 126 likes and 155 pub points.
 
 ---
 
