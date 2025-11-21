@@ -20,6 +20,8 @@ TOON combines YAML's indentation-based structure with CSV-style tabular arrays t
 
 -   ✅ **`encode()`** - Convert Dart objects to TOON format
 -   ✅ **`decode()`** - Parse TOON strings back to Dart objects
+-   ✅ **`yamlToToon()`** - Convert YAML to TOON format
+-   ✅ **`toonToYaml()`** - Convert TOON to YAML format
 -   ✅ **Lossless round-trip** conversion with full JSON data model support
 
 **Encoding Options:**
@@ -40,8 +42,8 @@ TOON combines YAML's indentation-based structure with CSV-style tabular arrays t
 
 **Additional Features:**
 
--   ✅ **CLI tool** - command-line interface for file/stream conversion
--   ✅ **Comprehensive tests** - 46+ tests including large datasets
+-   ✅ **CLI tool** - command-line interface for JSON/YAML/TOON conversion
+-   ✅ **Comprehensive tests** - 79+ tests including large datasets
 -   ✅ **Full documentation** - detailed API docs for all functions
 -   ✅ **Type-safe** - strongly typed Dart implementation
 
@@ -193,25 +195,66 @@ encode(data, options: EncodeOptions(lengthMarker: '#'));
 // tags[#3]: admin,ops,dev
 ```
 
+### YAML Support
+
+Convert between YAML and TOON formats:
+
+```dart
+// YAML → TOON
+final yamlString = '''
+users:
+  - id: 1
+    name: Alice
+    role: admin
+  - id: 2
+    name: Bob
+    role: user
+''';
+
+final toon = yamlToToon(yamlString);
+// users[2]{id,name,role}:
+//   1,Alice,admin
+//   2,Bob,user
+
+// TOON → YAML
+final yaml = toonToYaml(toon);
+print(yaml);
+```
+
 ---
 
 ## 🔧 CLI Tool
 
-Encode and decode via command line:
+Convert JSON, YAML, or TOON files via command line:
 
 ```bash
-# Encode JSON to TOON
-dart run toonx encode input.json -o output.toon
+# JSON → TOON
+dart run toonx input.json
 
-# Decode TOON to JSON
-dart run toonx decode data.toon -o output.json
+# YAML → TOON
+dart run toonx config.yaml
+
+# TOON → JSON (default)
+dart run toonx data.toon
+
+# Encode with explicit command
+dart run toonx encode input.json
+
+# Decode with explicit command
+dart run toonx decode data.toon
 
 # Pipe from stdin
 cat data.json | dart run toonx encode
+echo '{"name": "Alice"}' | dart run toonx encode
 
 # Show help
 dart run toonx --help
 ```
+
+**Supported file formats:**
+- `.json` → Auto-converts to TOON
+- `.yaml`, `.yml` → Auto-converts to TOON
+- `.toon` → Auto-converts to JSON
 
 ---
 

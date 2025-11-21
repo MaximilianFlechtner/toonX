@@ -1,3 +1,11 @@
+## 1.1.0
+
+-   Added YAML support with `yamlToToon()` and `toonToYaml()` functions
+-   CLI now supports YAML files (.yaml, .yml) with auto-detection
+-   Added 33 comprehensive tests for YAML conversion
+-   Updated README with YAML examples and usage guide
+-   Total test count: 79+ tests
+
 ## 1.0.1
 
 -   Fixed LICENSE file to comply with pub.dev requirements

@@ -73,18 +73,26 @@ Future<void> _autoDetect(String filePath) async {
     final trimmed = input.trim();
 
     if (filePath.endsWith('.toon')) {
+      // TOON → JSON (default output)
       final data = decode(input);
       final json = jsonEncode(data);
       stdout.writeln(json);
     } else if (filePath.endsWith('.json')) {
+      // JSON → TOON
       final data = jsonDecode(input);
       final toon = encode(data);
       stdout.write(toon);
+    } else if (filePath.endsWith('.yaml') || filePath.endsWith('.yml')) {
+      // YAML → TOON
+      final toon = yamlToToon(input);
+      stdout.write(toon);
     } else if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      // Auto-detect JSON → TOON
       final data = jsonDecode(input);
       final toon = encode(data);
       stdout.write(toon);
     } else {
+      // Auto-detect TOON → JSON
       final data = decode(input);
       final json = jsonEncode(data);
       stdout.writeln(json);
@@ -113,6 +121,11 @@ Usage:
   dart run toonx <file>            Auto-detect format and convert
   dart run toonx --help            Show this help message
 
+Supported Formats:
+  - JSON (.json)
+  - YAML (.yaml, .yml)
+  - TOON (.toon)
+
 Examples:
   # Encode from stdin
   echo '{"id": 1, "name": "Alice"}' | dart run toonx encode
@@ -121,8 +134,10 @@ Examples:
   dart run toonx decode data.toon
 
   # Auto-detect by extension
-  dart run toonx file.json     # encodes to TOON
-  dart run toonx file.toon     # decodes to JSON
+  dart run toonx file.json     # JSON → TOON
+  dart run toonx file.yaml     # YAML → TOON
+  dart run toonx file.yml      # YAML → TOON
+  dart run toonx file.toon     # TOON → JSON
 
 Input:
   - Reads from stdin if no file is provided
